@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>The Village Coco — Premium Coconut Exporter | Foreign & Pan-India Wholesale</title>
+<link rel="icon" type="image/png" href="village-coco-logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,600;9..144,800&family=Manrope:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&family=Noto+Color+Emoji&display=swap" rel="stylesheet">
+<script>document.documentElement.classList.add("js")</script>
+<style>
+/* ============================================================
+   THE VILLAGE COCO — Premium Coconut Exporter (Foreign & All India)
+   ============================================================ */
+
+:root{
+  --night:#0c1f1b;
+  --lime:#bcdc52;
+  --ink:#0c1f1b;
+  --paper:#ffffff;
+  --card-bg:#ffffff;
+  --water:#bfdde7;
+  --water-deep:#a9cedb;
+  --land:#ffffff;
+  --shore:#dcebf0;
+  --display:"Fraunces",Georgia,serif;
+  --body:"Manrope",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,monospace;
+}
+
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;scroll-behavior:smooth}
+body{
+  background-color:var(--water);
+  background-image:radial-gradient(120% 60% at 50% 0%, rgba(0,0,0,0) 40%, rgba(169,206,219,.55) 100%);
+  background-attachment:fixed;
+  background-repeat:no-repeat;
+  color:var(--ink);
+  font-family:var(--body);
+  -webkit-font-smoothing:antialiased;
+}
+body.loading{overflow:hidden}
+
+/* ============================ LOADER ============================ */
+
+#loader{
+  position:fixed; inset:0; z-index:999;
+  background:#f6efe0; cursor:pointer;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:clamp(14px,3vh,30px);
+}
+#loader.done{opacity:0;pointer-events:none;transition:opacity .5s ease}
+.loader-art{
+  height:min(42vh,320px); width:auto; max-width:80vw;
+  object-fit:contain; display:block;
+  animation: artIn .7s ease both, sway 3.4s .7s infinite ease-in-out;
+  transform-origin:50% 100%;
+}
+@keyframes artIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes sway{0%,100%{transform:rotate(-1.6deg)}50%{transform:rotate(1.6deg)}}
+
+.badge{text-align:center;color:var(--ink);animation:artIn .7s .15s both}
+.badge h1{
+  margin:0; font-family:var(--display);
+  font-size:clamp(20px,3vmin,34px); font-weight:600; letter-spacing:.22em;
+  text-transform:uppercase;
+}
+.badge p{
+  margin:.8em 0 0; font-family:var(--mono); font-size:clamp(10px,1.4vmin,13px);
+  letter-spacing:.18em; text-transform:uppercase; opacity:.7;
+}
+.bar{
+  width:min(280px,60vw); height:3px; margin:14px auto 0;
+  background:rgba(12,31,27,.14); overflow:hidden; border-radius:3px;
+}
+.bar span{display:block;height:100%;width:0;background:#5c8a3a;transition:width .12s linear}
+
+/* ================= MINIMALIST MICRO-INTERACTIONS ================= */
+
+/* hairline scroll progress */
+.progress{
+  position:fixed; top:0; left:0; right:0; height:2px; z-index:30;
+  background:#5c8a3a; transform:scaleX(0); transform-origin:0 50%;
+  will-change:transform; pointer-events:none;
+}
+
+/* the whole backdrop is open water */
+.sea-map{position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none;background:transparent}
+/* land under each section, with a shallow shore ring around it */
+.island{
+  position:absolute; background:var(--land);
+  box-shadow:0 0 0 18px var(--shore), 0 0 0 30px rgba(191,221,231,.55);
+}
+/* rocky outcrop sitting in the water beside the shipping route */
+.sea-rocks{
+  position:absolute; z-index:1; width:196px; height:auto;
+  pointer-events:none; user-select:none;
+  filter:drop-shadow(0 8px 14px rgba(12,50,66,.18));
+}
+@media (max-width:860px){ .sea-rocks{width:118px} }
+
+
+/* the ship's course — geometry only, drawn by nothing */
+.route{
+  position:absolute; inset:0; width:100%; height:100%;
+  pointer-events:none; z-index:4; overflow:visible;
+}
+.route{z-index:1}
+.route-line{fill:none;stroke:none}
+.ship-wrap{
+  position:absolute; top:0; left:0;
+  width:clamp(112px,14vw,190px);
+  z-index:3; pointer-events:none;
+  transform-origin:50% 50%; will-change:transform;
+  transition:transform .12s linear;
+}
+.ship{
+  position:relative; display:block; width:100%; height:auto;
+  filter:drop-shadow(0 6px 14px rgba(12,50,66,.28));
+}
+/* foam trailing off the stern, only while the ship is actually under way */
+.wake{
+  position:absolute; right:88%; top:50%;
+  width:230%; height:62%;
+  transform:translateY(-50%);
+  background:radial-gradient(closest-side at 100% 50%,
+              rgba(255,255,255,.9)  0%,
+              rgba(255,255,255,.45) 42%,
+              rgba(255,255,255,0)   100%);
+  filter:blur(3px);
+  opacity:0; transition:opacity .45s ease;
+}
+.ship-wrap.moving .wake{opacity:1; animation:wakeBreathe 1.6s ease-in-out infinite}
+@keyframes wakeBreathe{
+  0%,100%{transform:translateY(-50%) scaleX(1)}
+  50%    {transform:translateY(-50%) scaleX(1.08)}
+}
+
+/* scroll reveal — fade + 12px rise, plays once (JS only, so no-JS keeps content visible) */
+.js [data-reveal]{
+  opacity:0; transform:translateY(12px);
+  transition:opacity .35s cubic-bezier(.22,.61,.36,1) var(--d,0s),
+             transform .35s cubic-bezier(.22,.61,.36,1) var(--d,0s);
+}
+.js [data-reveal].in{opacity:1;transform:none}
+.strip > [data-reveal]:nth-child(2),.grid-4 > [data-reveal]:nth-child(2){--d:.07s}
+.strip > [data-reveal]:nth-child(3),.grid-4 > [data-reveal]:nth-child(3){--d:.14s}
+.grid-4 > [data-reveal]:nth-child(4){--d:.21s}
+
+/* keep focus visible — minimal styling must not cost keyboard users */
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{
+  outline:2px solid #14493c; outline-offset:3px; border-radius:4px;
+}
+
+/* ================== PORTS OF CALL (sections) ================== */
+.route-stop{position:relative;z-index:2}
+.stop-card{
+  width:min(600px,70%);
+  margin-block:clamp(110px,16vw,220px);
+  padding:clamp(26px,3.6vw,46px);
+  border-radius:28px;
+  background:var(--paper);
+  border:1px solid rgba(12,31,27,.10);
+  box-shadow:0 20px 44px rgba(12,50,66,.10);
+}
+.stop-left {margin-left:clamp(16px,7vw,110px); margin-right:auto}
+.stop-right{margin-right:clamp(16px,7vw,110px); margin-left:auto}
+
+/* ============================ THE PAGE ============================ */
+
+.page{opacity:0;position:relative}
+.page.reveal{animation:enter .6s ease both}
+@keyframes enter{from{opacity:0}to{opacity:1}}
+
+nav{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:20px clamp(20px,5vw,64px);
+  position:sticky; top:0; background:rgba(255,255,255,.94);
+  backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); z-index:10; border-bottom:1px solid transparent;
+  transition:border-color .25s ease, box-shadow .25s ease;
+}
+nav.scrolled{border-bottom-color:rgba(12,31,27,.10); box-shadow:0 1px 12px rgba(12,31,27,.05)}
+.mark{
+  display:flex; align-items:center; gap:14px;
+  font-family:var(--display); font-weight:600; letter-spacing:.15em;
+  text-transform:uppercase; font-size:16px; color:var(--ink); text-decoration:none;
+}
+.logo{height:54px;width:54px;object-fit:cover;display:block;border-radius:50%;box-shadow:0 3px 8px rgba(0,0,0,0.12)}
+nav ul{display:flex;gap:clamp(16px,3vw,34px);list-style:none;margin:0;padding:0;font-size:14px;font-weight:600}
+nav ul a{position:relative;color:var(--ink);text-decoration:none;opacity:.72;transition:opacity .22s ease}
+nav ul a::after{
+  content:""; position:absolute; left:0; right:0; bottom:-6px; height:1px;
+  background:currentColor; transform:scaleX(0); transform-origin:100% 50%;
+  transition:transform .25s cubic-bezier(.22,.61,.36,1);
+}
+nav ul a:hover,nav ul a:focus-visible{opacity:1}
+nav ul a:hover::after,nav ul a:focus-visible::after{transform:scaleX(1);transform-origin:0 50%}
+.mark:hover .logo,.mark:focus-visible .logo{transform:scale(1.04)}
+.mark .logo{transition:transform .25s cubic-bezier(.22,.61,.36,1)}
+.menu{display:none}
+
+.hero{
+  padding:clamp(48px,7vw,90px) clamp(20px,5vw,64px) clamp(56px,8vw,110px);
+  display:grid; grid-template-columns:1fr; align-items:center;
+  min-height:calc(100svh - 95px); text-align:center; justify-items:center;
+}
+.hero h2{
+  font-family:var(--display); font-weight:300;
+  font-size:clamp(38px,6.5vw,90px); line-height:.96; letter-spacing:-.02em; margin:0 0 20px;
+}
+.hero h2 em{font-style:normal;font-weight:800;display:block;color:#14493c}
+
+/* headline reveal: each word rises out of its own line box, blurred to sharp.
+   Base state is the finished state, so the class can be dropped afterwards
+   without a flash — and descenders stop being clipped once it is. */
+.hero h2 .w{display:inline-block;vertical-align:top}
+.hero h2 .w > i{display:inline-block;font-style:inherit;will-change:transform,opacity,filter}
+.hero h2.reveal-words .w{overflow:hidden;padding-bottom:.06em}
+.hero h2.reveal-words .w > i{
+  animation:wordRise 1.15s cubic-bezier(.16,1,.3,1) var(--wd,0s) both;
+}
+@keyframes wordRise{
+  from{transform:translateY(110%);opacity:0;filter:blur(7px)}
+  55% {opacity:1}
+  to  {transform:none;opacity:1;filter:blur(0)}
+}
+.actions{display:flex;gap:14px;flex-wrap:wrap}
+.btn{
+  font:600 15px/1 var(--body); padding:16px 28px; border-radius:999px; border:1px solid var(--ink);
+  background:var(--ink); color:var(--paper); text-decoration:none; cursor:pointer; display:inline-flex; align-items:center; gap:8px;
+}
+.btn.ghost{background:transparent;color:var(--ink)}
+.btn{transition:background-color .22s ease,color .22s ease,border-color .22s ease,transform .1s ease}
+.arrow{display:inline-block;transition:transform .22s cubic-bezier(.22,.61,.36,1)}
+@media (hover:hover){
+  .btn:hover{background:#14493c;border-color:#14493c;color:var(--paper)}
+  .btn.ghost:hover{background:rgba(12,31,27,.06);color:var(--ink);border-color:var(--ink)}
+  .btn:hover .arrow{transform:translateX(4px)}
+}
+.btn:active{transform:scale(.985)}
+
+/* ==================== HERO STAT & FLOATING PRODUCTS ==================== */
+.hero-inner{
+  display:flex; flex-direction:column; align-items:center; width:100%; max-width:1000px;
+}
+.stat-badge{
+  display:inline-flex; align-items:center; gap:10px;
+  background:rgba(255,255,255,0.92); border:1px solid rgba(12,31,27,0.14);
+  padding:8px 20px 8px 10px; border-radius:999px; margin-bottom:24px;
+  box-shadow:0 6px 20px rgba(12,50,66,0.08); backdrop-filter:blur(8px);
+}
+.stat-num{
+  font-family:var(--mono); font-weight:700; font-size:14px; color:#ffffff;
+  background:#14493c; padding:6px 12px; border-radius:999px; letter-spacing:.05em;
+}
+.stat-label{
+  font-family:var(--body); font-size:13px; font-weight:700;
+  letter-spacing:.06em; text-transform:uppercase; color:var(--ink);
+}
+
+.floating-showcase{
+  display:flex; justify-content:center; align-items:center;
+  gap:clamp(14px, 3vw, 28px); margin-top:clamp(28px, 4vw, 48px);
+  flex-wrap:wrap; width:100%;
+}
+.float-card{
+  display:flex; flex-direction:column; align-items:center; gap:10px;
+  background:#ffffff; padding:12px; border-radius:20px;
+  border:1px solid rgba(12,31,27,0.12); box-shadow:0 12px 32px rgba(12,50,66,0.12);
+  text-decoration:none; color:var(--ink); width:clamp(130px, 20vw, 175px);
+  transition:transform .35s cubic-bezier(.22,.61,.36,1), box-shadow .35s ease, border-color .35s ease;
+}
+@media (hover:hover){
+  .float-card:hover{
+    transform:translateY(-14px) scale(1.06) !important;
+    box-shadow:0 20px 42px rgba(20,73,60,0.22); border-color:#14493c;
+  }
+}
+.float-img-wrap{
+  width:100%; height:clamp(100px, 14vw, 135px); border-radius:14px;
+  overflow:hidden; background:#f6efe0; border:1px solid rgba(12,31,27,0.06);
+}
+.float-img{
+  width:100%; height:100%; object-fit:cover; display:block;
+  transition:transform .4s ease;
+}
+@media (hover:hover){
+  .float-card:hover .float-img{transform:scale(1.08)}
+}
+.float-title{
+  font-family:var(--display); font-size:14px; font-weight:600;
+  color:var(--ink); text-align:center;
+}
+
+/* Staggered Floating Animations */
+.float-item-1{animation:float 4.2s ease-in-out infinite}
+.float-item-2{animation:floatReverse 4.8s ease-in-out infinite .5s}
+.float-item-3{animation:float 4.5s ease-in-out infinite 1s}
+.float-item-4{animation:floatReverse 5.2s ease-in-out infinite 1.5s}
+
+@keyframes float{
+  0%,100%{transform:translateY(0px) rotate(0deg)}
+  50%{transform:translateY(-12px) rotate(1.8deg)}
+}
+@keyframes floatReverse{
+  0%,100%{transform:translateY(0px) rotate(0deg)}
+  50%{transform:translateY(12px) rotate(-1.8deg)}
+}
+
+
+
+.strip{
+  background:#f2ead8; color:var(--ink); border-color:rgba(12,31,27,.10);
+  display:grid; grid-template-columns:1fr; gap:clamp(22px,3vw,34px);
+}
+.strip h3{font-family:var(--display);font-weight:600;font-size:24px;margin:0 0 12px;color:var(--ink)}
+.strip p{margin:0;font-size:15px;line-height:1.65;color:#4b5950}
+.strip .num{
+  font-family:var(--mono); font-size:12px; color:#5c8a3a;
+  letter-spacing:.14em; display:block; margin-bottom:14px; font-weight:600;
+}
+
+/* watercolour palms tucked into the corner of the About section */
+.about-tree{
+  position:absolute; left:0; bottom:0;
+  width:clamp(150px,19vw,300px); height:auto;
+  pointer-events:none; user-select:none; z-index:-1;   /* behind the hero content */
+  opacity:.92;
+}
+@media (max-width:860px){
+  .about-tree{width:clamp(96px,24vw,140px); opacity:.75}
+}
+
+/* destinations shipped to so far */
+.flags{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 0;padding:0;list-style:none}
+.flags li{
+  display:inline-flex; align-items:center; gap:7px;
+  padding:6px 12px 6px 8px; border-radius:999px;
+  background:rgba(255,255,255,.72); border:1px solid rgba(12,31,27,.12);
+  font-size:12.5px; font-weight:600; color:#2c3a32; white-space:nowrap;
+}
+.flags .fl{
+  font-family:"Noto Color Emoji","Apple Color Emoji","Segoe UI Emoji",sans-serif;
+  font-size:15px; line-height:1;
+}
+
+/* ============================ PRODUCTS SECTION ============================ */
+.products-section{background:#f2ead8}
+.section-title{
+  text-align:center; max-width:600px; margin:0 auto 36px;
+}
+.section-title h3{
+  font-family:var(--display); font-size:clamp(28px,4vw,42px); font-weight:700; margin:0 0 12px;
+}
+.section-title p{
+  font-size:16px; color:#4a594e; margin:0; line-height:1.6;
+}
+.grid-4{
+  display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:22px;
+}
+.card{
+  background:var(--card-bg); padding:20px; border-radius:18px;
+  box-shadow:none; border:1px solid rgba(12,31,27,0.10);
+  transition:transform .25s cubic-bezier(.22,.61,.36,1), border-color .25s ease, box-shadow .25s ease;
+  display:flex; flex-direction:column; justify-content:space-between;
+}
+@media (hover:hover){
+  .card:hover{transform:translateY(-4px); border-color:rgba(20,73,60,.35); box-shadow:0 10px 24px rgba(12,31,27,.08)}
+}
+.card-img-wrap{
+  width:100%; height:180px; border-radius:12px; overflow:hidden; margin-bottom:16px;
+  background:#f6efe0; border:1px solid rgba(12,31,27,0.08); position:relative;
+}
+.card-img{
+  width:100%; height:100%; object-fit:cover; display:block;
+  transition:transform .4s cubic-bezier(.22,.61,.36,1);
+}
+@media (hover:hover){
+  .card:hover .card-img{transform:scale(1.06)}
+}
+.card-body{display:flex; flex-direction:column; flex:1; justify-content:space-between}
+.card h4{font-family:var(--display); font-size:20px; font-weight:600; margin:0 0 10px; color:var(--ink)}
+.card p{font-size:14px; line-height:1.6; color:#4b5950; margin:0 0 16px; flex:1}
+.card-tag{font-family:var(--mono); font-size:11px; text-transform:uppercase; letter-spacing:0.08em; color:#5c8a3a; font-weight:600; background:#edf4e8; padding:6px 10px; border-radius:6px; display:inline-block; align-self:flex-start}
+
+
+/* ============================ INQUIRY SECTION ============================ */
+.inquiry-section{
+  display:block;
+}
+.inquiry-info h3{
+  font-family:var(--display); font-size:clamp(26px,3.8vw,40px); margin:0 0 16px; font-weight:700;
+}
+.contact-list{list-style:none; padding:0; margin:0 0 32px; display:grid; gap:14px}
+.contact-list li{display:grid; grid-template-columns:145px 1fr; align-items:baseline; gap:8px; font-size:15px; font-weight:500; line-height:1.5}
+.contact-list span{font-family:var(--mono); color:#5c8a3a; font-weight:600; font-size:13px; text-transform:uppercase; letter-spacing:0.04em}
+
+@media (max-width:600px){
+  .contact-list li{grid-template-columns:1fr; gap:4px; padding-bottom:10px; border-bottom:1px solid rgba(12,31,27,0.08)}
+  .contact-list li:last-child{border-bottom:none; padding-bottom:0}
+  .actions{flex-direction:column; width:100%}
+  .actions .btn{width:100%; justify-content:center}
+}
+
+.wa-btn{
+  background:#14493c; color:#ffffff; border-color:#14493c;
+  font-size:15px; padding:16px 28px; box-shadow:0 8px 24px rgba(20,73,60,0.18);
+}
+@media (hover:hover){
+  .wa-btn:hover{
+    background:#25D366; border-color:#25D366; color:#ffffff;
+    box-shadow:0 10px 28px rgba(37,211,102,0.35); transform:translateY(-2px);
+  }
+}
+.insta-btn{
+  background:linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+  color:#ffffff; border:none; font-size:15px; padding:16px 28px; box-shadow:0 6px 20px rgba(220,39,67,0.25);
+}
+@media (hover:hover){
+  .insta-btn:hover{
+    opacity:.95; transform:translateY(-2px); box-shadow:0 10px 26px rgba(220,39,67,0.38); color:#ffffff;
+  }
+}
+
+footer{
+  padding:26px clamp(20px,5vw,64px) clamp(40px,6vw,70px);
+  display:flex; justify-content:center; align-items:center; text-align:center;
+  gap:8px 22px; flex-wrap:wrap; font-size:13px; color:#3f5a60; border-top:0;
+}
+@media (max-width:860px){
+  .stop-card{width:min(620px,88%);margin-left:auto;margin-right:auto}
+  /* full-width islands: the ship sails behind them, visible in the straits */
+  .ship-wrap{z-index:1;width:clamp(88px,22vw,150px)}
+  .inquiry-section{grid-template-columns:1fr}
+  .strip{grid-template-columns:1fr}
+  nav{flex-wrap:wrap}
+  nav ul{display:none}
+  nav ul.open{
+    display:flex; flex-direction:column; gap:0; width:100%; order:3;
+    margin-top:12px; padding-top:6px; border-top:1px solid rgba(12,31,27,.12);
+  }
+  nav ul.open a{display:block; padding:14px 2px; min-height:44px}
+  nav ul.open a::after{bottom:8px}
+  .menu{
+    display:block; font:600 14px/1 var(--body); color:var(--ink);
+    background:none; border:1px solid rgba(12,31,27,.2); border-radius:999px;
+    padding:14px 18px; min-height:44px; cursor:pointer;
+    transition:background-color .22s ease;
+  }
+  .menu[aria-expanded="true"]{background:rgba(12,31,27,.07)}
+  /* 16px keeps iOS Safari from zooming the page on focus */
+  .form-group input,.form-group select,.form-group textarea{font-size:16px}
+}
+
+@media (prefers-reduced-motion:reduce){
+  #loader{display:none}
+  .page,.page.reveal{opacity:1;animation:none}
+  .js [data-reveal]{opacity:1 !important;transform:none !important}
+  .progress{display:none}
+  *{animation-duration:.001s !important;animation-iteration-count:1 !important;transition:none !important}
+}
+</style>
+</head>
+<body class="loading">
+<div class="progress" id="progress"></div>
+
+<!-- ======================= LOADER ======================= -->
+<div id="loader" title="Click to skip">
+  <img class="loader-art" src="village-coco-loader.gif" alt="Animated coconut palm tree">
+  <div class="badge">
+    <h1>The&nbsp;Village&nbsp;Coco</h1>
+    <p id="status">Loading Export Portal — 0%</p>
+    <div class="bar"><span id="fill"></span></div>
+  </div>
+</div>
+
+<!-- ======================= PAGE ======================= -->
+<div class="page" id="page">
+  <div class="sea-map" aria-hidden="true">
+  </div>
+  <svg class="route" id="route" aria-hidden="true" focusable="false">
+    <path class="route-line" id="routeLine"/>
+  </svg>
+  <div class="ship-wrap" id="shipWrap" aria-hidden="true">
+    <span class="wake"></span>
+    <img class="ship" id="ship" src="ship.svg" alt="">
+  </div>
+  <nav>
+    <a class="mark" href="#">
+      <img class="logo" src="village-coco-logo.png" alt="The Village Coco Logo">
+      <span>The&nbsp;Village&nbsp;Coco</span>
+    </a>
+    <ul id="navLinks">
+      <li><a href="#about">About Export</a></li>
+      <li><a href="#products">Our Products</a></li>
+      <li><a href="#logistics">Logistics</a></li>
+      <li><a href="#contact">Export Inquiry</a></li>
+      <li><a href="https://www.instagram.com/the_village_coco_/" target="_blank" rel="noopener" aria-label="Instagram" style="display:inline-flex;align-items:center;gap:6px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg> Instagram</a></li>
+    </ul>
+    <button class="menu" aria-controls="navLinks" aria-expanded="false">Menu</button>
+  </nav>
+
+  <header class="hero route-stop" data-lane="none" id="about">
+    <img class="about-tree" src="tree.png" alt="" aria-hidden="true">
+    <div class="hero-inner">
+      <div class="stat-badge" data-reveal>
+        <span class="stat-num">400+ TONS</span>
+        <span class="stat-label">Exported Worldwide & Pan-India</span>
+      </div>
+      <h2>Fresh Coconuts<em>Exported Worldwide & Across India</em></h2>
+      
+      <div class="floating-showcase" data-reveal>
+        <a href="#products" class="float-card float-item-1" title="View Raw Coconut">
+          <div class="float-img-wrap">
+            <img class="float-img" src="raw coconut.png" alt="Raw Coconut">
+          </div>
+          <span class="float-title">Raw Coconut</span>
+        </a>
+        <a href="#products" class="float-card float-item-2" title="View Coco Peat">
+          <div class="float-img-wrap">
+            <img class="float-img" src="coco peat.png" alt="Coco Peat">
+          </div>
+          <span class="float-title">Coco Peat</span>
+        </a>
+        <a href="#products" class="float-card float-item-3" title="View Desiccated Powder">
+          <div class="float-img-wrap">
+            <img class="float-img" src="desiccated powder.png" alt="Desiccated Powder">
+          </div>
+          <span class="float-title">Desiccated Powder</span>
+        </a>
+        <a href="#products" class="float-card float-item-4" title="View Edible Copra">
+          <div class="float-img-wrap">
+            <img class="float-img" src="edible copra.png" alt="Edible Copra">
+          </div>
+          <span class="float-title">Edible Copra</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <section class="strip route-stop stop-card stop-right" data-lane="left" id="logistics">
+    <div data-reveal>
+      <span class="num">Global Foreign Export</span>
+      <h3>Worldwide Shipping</h3>
+      <p>Sea freight container solutions tailored for Dubai, UK, Oman, Kuwait, Saudi Arabia, Sri Lanka, and international importers with phytosanitary clearance.</p>
+      <ul class="flags">
+        <li><span class="fl" aria-hidden="true">🇦🇪</span>UAE &middot; Dubai</li>
+        <li><span class="fl" aria-hidden="true">🇬🇧</span>United Kingdom</li>
+        <li><span class="fl" aria-hidden="true">🇴🇲</span>Oman</li>
+        <li><span class="fl" aria-hidden="true">🇰🇼</span>Kuwait</li>
+        <li><span class="fl" aria-hidden="true">🇸🇦</span>Saudi Arabia</li>
+        <li><span class="fl" aria-hidden="true">🇱🇰</span>Sri Lanka</li>
+      </ul>
+    </div>
+    <div data-reveal>
+      <span class="num">All-India Distribution</span>
+      <h3>Pan-India Network</h3>
+      <p>Seamless logistics delivering fresh batches directly to wholesale markets, retail chains, and distributors across all Indian states and metro hubs.</p>
+    </div>
+    <div data-reveal>
+      <span class="num">Export Packaging</span>
+      <h3>Product-Specific Packing</h3>
+      <p>Customized export packing for raw coconuts, compressed coco peat, moisture-sealed desiccated powder, and edible copra engineered for long transit integrity.</p>
+    </div>
+  </section>
+
+  <!-- ======================= PRODUCTS SECTION ======================= -->
+  <section class="products-section route-stop stop-card stop-left" data-lane="right" id="products">
+    <div class="section-title" data-reveal>
+      <h3>Export Product Catalog</h3>
+      <p>We supply premium South Indian coconut products carefully processed and packed for international export standards and pan-India wholesale delivery.</p>
+    </div>
+    <div class="grid-4">
+      <div class="card" data-reveal>
+        <div class="card-img-wrap">
+          <img class="card-img" src="raw coconut.png" alt="Raw Coconut" loading="lazy">
+        </div>
+        <div class="card-body">
+          <div>
+            <h4>Raw Coconut</h4>
+            <p>Freshly harvested mature raw coconuts from South Indian groves. Rich in natural water content and thick copra meat, perfect for international maritime shipping.</p>
+          </div>
+          <span class="card-tag">Export Grade · 25 Pieces (13kg)</span>
+        </div>
+      </div>
+      <div class="card" data-reveal>
+        <div class="card-img-wrap">
+          <img class="card-img" src="coco peat.png" alt="Coco Peat" loading="lazy">
+        </div>
+        <div class="card-body">
+          <div>
+            <h4>Coco Peat</h4>
+            <p>100% organic coir pith substrate with exceptional moisture retention and aeration. Available in washed low EC 5kg blocks for global horticulture.</p>
+          </div>
+          <span class="card-tag">5kg Blocks · Low EC / High Expansion</span>
+        </div>
+      </div>
+      <div class="card" data-reveal>
+        <div class="card-img-wrap">
+          <img class="card-img" src="desiccated powder.png" alt="Desiccated Coconut Powder" loading="lazy">
+        </div>
+        <div class="card-body">
+          <div>
+            <h4>Desiccated Powder</h4>
+            <p>Hygienically dried and finely shredded coconut meat. Retains authentic tropical aroma and high fat content, ideal for bakery and food manufacturing.</p>
+          </div>
+          <span class="card-tag">Fine & Medium · High Fat</span>
+        </div>
+      </div>
+      <div class="card" data-reveal>
+        <div class="card-img-wrap">
+          <img class="card-img" src="edible copra.png" alt="Edible Copra" loading="lazy">
+        </div>
+        <div class="card-body">
+          <div>
+            <h4>Edible Copra</h4>
+            <p>Sun-dried premium quality copra cups with maximum oil extraction yield. Sorted and processed under strict hygienic conditions for export markets.</p>
+          </div>
+          <span class="card-tag">Grade A · High Oil Content</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================= INQUIRY & CONTACT SECTION ======================= -->
+  <section class="inquiry-section route-stop stop-card stop-right" data-lane="left" id="contact">
+    <div class="inquiry-info" data-reveal>
+      <h3>Partner With Us for Coconut Supply</h3>
+      <p>Whether you are an overseas importer, international trading company, or an Indian wholesale buyer, we offer reliable volume supply, competitive FOB/CIF rates, and strict quality control directly from Pollachi.</p>
+      
+      <ul class="contact-list">
+        <li><span>Phone / Call:</span> <a href="tel:+917010984837" style="color:inherit;text-decoration:none;font-weight:600;">+91 7010984837</a></li>
+        <li><span>Global Export:</span> Sea Cargo Containers (FOB / CIF)</li>
+        <li><span>Domestic Supply:</span> Pan-India Wholesale & Truckload Supply</li>
+        <li><span>Location:</span> Pollachi, Tamil Nadu, South India</li>
+        <li><span>Certifications:</span> Phytosanitary & Export Compliant</li>
+      </ul>
+
+      <div class="actions">
+        <a class="btn wa-btn" href="https://wa.me/917010984837?text=Hello%20The%20Village%20Coco,%20I%20want%20to%20inquire%20about%20coconut%20export" target="_blank" rel="noopener">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12.012 2c-5.506 0-9.989 4.478-9.99 9.984a9.96 9.96 0 001.333 4.993L2 22l5.233-1.237a9.96 9.96 0 004.779 1.221h.004c5.505 0 9.988-4.478 9.989-9.984 0-2.669-1.038-5.176-2.925-7.064A9.925 9.925 0 0012.012 2zm5.835 14.197c-.244.688-1.428 1.312-1.97 1.37-.506.054-1.157.078-3.666-.957-3.08-1.269-5.06-4.409-5.213-4.613-.153-.204-1.243-1.654-1.243-3.155 0-1.502.784-2.242 1.06-2.525.275-.283.6-.353.8-.353.201 0 .401.002.576.01.186.008.435-.07.68.518.256.615.871 2.128.947 2.281.077.153.128.333.025.536-.102.204-.153.332-.306.51-.153.178-.322.398-.46.535-.153.153-.312.32-.134.626.178.306.792 1.306 1.701 2.116 1.168 1.041 2.155 1.364 2.461 1.517.306.153.485.128.664-.076.179-.204.767-.893.971-1.199.204-.306.409-.255.689-.153.28.102 1.777.838 2.083.991.306.153.51.23.586.357.076.128.076.741-.168 1.429z"/></svg>
+          +91 7010984837
+        </a>
+        <a class="btn insta-btn" href="https://www.instagram.com/the_village_coco_/" target="_blank" rel="noopener">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+          @the_village_coco_
+        </a>
+      </div>
+      <footer class="route-stop" data-lane="center" data-reveal style="margin-top:40px;">
+        <span>© 2026 The Village Coco — Premier Coconut Exporters (India & Global)</span>
+        <span>Pollachi, Tamil Nadu • 📞 +91 7010984837</span>
+      </footer>
+</div>
+
+<script>
+const loader = document.getElementById("loader");
+const page   = document.getElementById("page");
+const fill   = document.getElementById("fill");
+const status = document.getElementById("status");
+let   timer  = null;
+
+const reveals = document.querySelectorAll("[data-reveal]");
+const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+let io = null;
+
+/* subtle scroll reveal: fade + 12px rise, each element plays once */
+function initReveal(){
+  if(io) return;
+  if(reduceMotion || !("IntersectionObserver" in window)){
+    reveals.forEach(el=>el.classList.add("in"));
+    return;
+  }
+  io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+      if(!e.isIntersecting) return;
+      e.target.classList.add("in");
+      io.unobserve(e.target);           // no re-trigger on scroll back up
+    });
+  },{rootMargin:"0px 0px -10% 0px", threshold:.01});
+  reveals.forEach(el=>io.observe(el));
+
+  /* safety net: never leave content hidden if the observer never delivers */
+  setTimeout(()=>{
+    if(![...reveals].some(el=>el.classList.contains("in")))
+      reveals.forEach(el=>el.classList.add("in"));
+  }, 2000);
+}
+
+/* split the headline into words and let them rise in sequence */
+function animateHeadline(){
+  const h2 = document.querySelector(".hero h2");
+  if(!h2 || reduceMotion || h2.dataset.split) return;
+  h2.dataset.split = "1";
+
+  let n = 0;
+  const split = node => {
+    const words = node.textContent.split(/\s+/).filter(Boolean);
+    const frag  = document.createDocumentFragment();
+    words.forEach((word,k)=>{
+      const outer = document.createElement("span");
+      const inner = document.createElement("i");
+      outer.className = "w";
+      inner.textContent = word;
+      inner.style.setProperty("--wd", (n++ * 0.11).toFixed(2) + "s");
+      outer.appendChild(inner);
+      frag.appendChild(outer);
+      if(k < words.length - 1) frag.appendChild(document.createTextNode(" "));
+    });
+    node.parentNode.replaceChild(frag, node);
+  };
+
+  const walk = el => [...el.childNodes].forEach(node=>{
+    if(node.nodeType === 3){ if(node.textContent.trim()) split(node); }
+    else if(node.nodeType === 1) walk(node);
+  });
+  walk(h2);
+
+  h2.classList.add("reveal-words");
+
+  /* once the last word lands, drop the class so nothing stays clipped */
+  const last = [...h2.querySelectorAll(".w > i")].pop();
+  if(last) last.addEventListener("animationend", ()=>h2.classList.remove("reveal-words"), {once:true});
+}
+
+function finish(){
+  if(loader.classList.contains("done")) return;
+  clearInterval(timer);
+  page.classList.add("reveal");
+  loader.classList.add("done");
+  document.body.classList.remove("loading");
+  initReveal();                          // start after the page is actually visible
+  animateHeadline();
+  setTimeout(()=>loader.style.display="none",600);
+}
+
+/* progress runs for ~2s, then the page takes over */
+let p = 0;
+timer = setInterval(()=>{
+  p = Math.min(100, p + Math.random()*12);
+  fill.style.width = p + "%";
+  status.textContent = (p<100 ? "Loading Export Portal — " : "Ready — ") + Math.round(p) + "%";
+  if(p >= 100){ clearInterval(timer); setTimeout(finish, 300); }
+}, 100);
+
+loader.addEventListener("click", finish);        // click anywhere to skip
+
+if(reduceMotion){
+  page.style.opacity = 1;
+  document.body.classList.remove("loading");
+  loader.style.display = "none";
+  clearInterval(timer);
+  initReveal();
+}
+
+/* mobile menu: the links are hidden under 860px, so the button must open them */
+const menuBtn  = document.querySelector(".menu");
+const navLinks = document.getElementById("navLinks");
+
+menuBtn.addEventListener("click", ()=>{
+  const open = navLinks.classList.toggle("open");
+  menuBtn.setAttribute("aria-expanded", open ? "true" : "false");
+});
+navLinks.addEventListener("click", e=>{          // close once a destination is picked
+  if(e.target.closest("a")){
+    navLinks.classList.remove("open");
+    menuBtn.setAttribute("aria-expanded","false");
+  }
+});
+
+/* hairline scroll progress + nav hairline once the page moves */
+const progress = document.getElementById("progress");
+const navEl    = document.querySelector("nav");
+const ship     = document.getElementById("ship");
+const shipWrap = document.getElementById("shipWrap");
+let   wakeTimer = null;
+const routeSvg = document.getElementById("route");
+const seaMap   = document.querySelector(".sea-map");
+const routeLine= document.getElementById("routeLine");
+let ticking    = false;
+let routeLen   = 0;
+let pageOffset = 0;   // .page's distance from the top of the document
+/* Give every section its own island: an organic landmass sitting under the
+   card, ringed by shallows. Everything else on the page stays open water. */
+const ISLAND_SHAPES = [
+  "46% 54% 38% 62% / 58% 42% 58% 42%",
+  "58% 42% 60% 40% / 44% 58% 42% 56%",
+  "40% 60% 52% 48% / 52% 40% 60% 48%",
+  "56% 44% 44% 56% / 46% 56% 44% 54%"
+];
+
+/* A rocky outcrop out in the water next to the Export Product section, set
+   between the card and the shipping lane so the ship sails past it. */
+function placeSeaRocks(pageTop, W){
+  seaMap.querySelectorAll(".sea-rocks").forEach(el=>el.remove());
+  const products = document.getElementById("products");
+  if(!products) return;
+
+  const narrow = innerWidth < 861;
+  const r      = products.getBoundingClientRect();
+  const width  = narrow ? 118 : 196;
+  const laneX  = W * (narrow ? 0.72 : 0.81);
+  const top    = r.top + scrollY - pageTop;
+
+  const img = document.createElement("img");
+  img.className = "sea-rocks";
+  img.src = "rocks.png";
+  img.alt = "";
+  img.setAttribute("aria-hidden", "true");
+
+  if(narrow){                                   // card is full width — sit below it
+    img.style.left = (W * 0.5 - width / 2) + "px";
+    img.style.top  = (top + r.height + 48) + "px";
+  }else{                                        // open water between card and lane
+    img.style.left = ((r.right + laneX) / 2 - width / 2) + "px";
+    img.style.top  = (top + r.height * 0.42) + "px";
+  }
+  seaMap.appendChild(img);
+}
+
+function buildIslands(pageTop){
+  seaMap.querySelectorAll(".island").forEach(el=>el.remove());
+  const pad = innerWidth < 861 ? 26 : 54;
+
+  document.querySelectorAll(".stop-card").forEach((card,i)=>{
+    const r = card.getBoundingClientRect();
+    const el = document.createElement("div");
+    el.className = "island";
+    el.style.left   = (r.left - pad) + "px";
+    el.style.top    = (r.top + scrollY - pageTop - pad) + "px";
+    el.style.width  = (r.width  + pad * 2) + "px";
+    el.style.height = (r.height + pad * 2) + "px";
+    el.style.borderRadius = ISLAND_SHAPES[i % ISLAND_SHAPES.length];
+    seaMap.appendChild(el);
+  });
+}
+
+function buildRoute(){
+  const W = page.offsetWidth;
+  const H = page.offsetHeight;
+  const stops = [...document.querySelectorAll(".route-stop")]
+                  .filter(el => el.dataset.lane !== "none");   // voyage starts at Logistics
+  if(!stops.length || !W) return;
+
+  const pageTop = page.getBoundingClientRect().top + scrollY;
+  pageOffset = pageTop;
+  const narrow = W < 861;                              // cards go full-width below this
+  const LANES  = narrow ? {left:0.28, center:0.5, right:0.72}
+                        : {left:0.19, center:0.5, right:0.81};
+  const pts = [];
+  stops.forEach((el,i)=>{
+    const r   = el.getBoundingClientRect();
+    const x   = W * (LANES[el.dataset.lane] ?? 0.5);
+    const top = r.top    + scrollY - pageTop;
+    const bot = r.bottom + scrollY - pageTop;
+    if(el.classList.contains("stop-card")){
+      pts.push([x, top], [x, bot]);        // sail the length of the island, never across it
+    }else if(i === 0){
+      pts.push([x, top + (bot - top) * 0.72]);        // departure, below the headline
+    }else{
+      /* arrive in the open water above the footer, never on top of its text */
+      const prevY = pts.length ? pts[pts.length - 1][1] : top;
+      pts.push([x, (prevY + top) / 2]);
+    }
+  });
+
+  /* Force the course to always descend. Sections can overlap vertically, and a
+     course that doubles back breaks the height search the ship is steered by. */
+  for(let i = 1; i < pts.length; i++)
+    pts[i][1] = Math.max(pts[i][1], pts[i-1][1] + 24);
+
+  /* smooth cubics with vertical handles → gentle S-curves, never a kink */
+  let d = "M " + pts[0][0].toFixed(1) + " " + pts[0][1].toFixed(1);
+  for(let i = 1; i < pts.length; i++){
+    const [x0,y0] = pts[i-1], [x1,y1] = pts[i];
+    const h = (y1 - y0) * 0.5;
+    d += " C " + x0.toFixed(1) + " " + (y0+h).toFixed(1) +
+         ", " + x1.toFixed(1) + " " + (y1-h).toFixed(1) +
+         ", " + x1.toFixed(1) + " " + y1.toFixed(1);
+  }
+
+  routeSvg.setAttribute("viewBox", "0 0 " + W + " " + H);
+  routeSvg.setAttribute("width", W);
+  routeSvg.setAttribute("height", H);
+  routeLine.setAttribute("d", d);
+  buildIslands(pageTop);
+  placeSeaRocks(pageTop, W);
+  routeLen = routeLine.getTotalLength();
+
+  /* place the ship straight away — rAF may not run for a while in a background tab */
+  sailShip();
+}
+
+/* Find how far along the course sits at a given height. The course only ever
+   descends, so a binary search settles in a handful of steps. */
+function distanceAtHeight(targetY){
+  if(routeLine.getPointAtLength(0).y >= targetY) return 0;
+  if(routeLine.getPointAtLength(routeLen).y <= targetY) return routeLen;
+  let lo = 0, hi = routeLen;
+  for(let i = 0; i < 22; i++){
+    const mid = (lo + hi) / 2;
+    if(routeLine.getPointAtLength(mid).y < targetY) lo = mid; else hi = mid;
+  }
+  return (lo + hi) / 2;
+}
+
+/* Keep the ship at the middle of the screen and let the course decide where
+   it sits left-to-right. Driving it by distance travelled instead made it
+   drift, because the sideways crossings add length without adding height. */
+function sailShip(){
+  if(!routeLen) return;
+
+  /* The ship rides the middle of the screen, but the last screenful of the
+     page can never BE the middle — so over the final screen of scrolling the
+     tracking line eases downward, letting the ship finish its course instead
+     of freezing while the page keeps moving. */
+  const vh    = innerHeight;
+  const maxUp = document.documentElement.scrollHeight - vh;
+  const endY  = routeLine.getPointAtLength(routeLen).y + pageOffset;
+  const need  = Math.min(Math.max(endY - maxUp, vh / 2), vh - 70);
+  const t     = maxUp > 0 ? Math.min(1, Math.max(0, (scrollY - (maxUp - vh)) / vh)) : 1;
+  const offset = vh / 2 + (need - vh / 2) * t;
+
+  const dist  = distanceAtHeight(scrollY + offset - pageOffset);
+  const at    = routeLine.getPointAtLength(dist);
+  const base  = Math.min(dist, routeLen - 2);          // keep a valid pair at the very end
+  const from  = routeLine.getPointAtLength(base);
+  const ahead = routeLine.getPointAtLength(base + 2);
+  const angle = Math.atan2(ahead.y - from.y, ahead.x - from.x) * 180 / Math.PI;
+  shipWrap.style.transform =
+    "translate(" + at.x.toFixed(1) + "px," + at.y.toFixed(1) + "px)" +
+    " translate(-50%,-50%) rotate(" + angle.toFixed(1) + "deg)";
+}
+
+function onScroll(){
+  if(ticking) return;
+  ticking = true;
+  requestAnimationFrame(()=>{
+    const max = document.documentElement.scrollHeight - innerHeight;
+    const p   = max > 0 ? Math.min(1, scrollY/max) : 0;
+    progress.style.transform = "scaleX(" + p + ")";
+    navEl.classList.toggle("scrolled", scrollY > 8);
+    sailShip();
+    if(!reduceMotion){
+      shipWrap.classList.add("moving");
+      clearTimeout(wakeTimer);
+      wakeTimer = setTimeout(()=>shipWrap.classList.remove("moving"), 420);
+    }
+    ticking = false;
+  });
+}
+let resizeTimer = null;
+addEventListener("scroll", onScroll, {passive:true});
+addEventListener("resize", ()=>{
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(()=>{ buildRoute(); onScroll(); }, 150);
+}, {passive:true});
+ship.addEventListener("load", ()=>{ buildRoute(); onScroll(); });
+addEventListener("load", ()=>{ buildRoute(); onScroll(); });   // fonts/images settled
+buildRoute();
+onScroll();
+</script>
+
+</body>
+</html>

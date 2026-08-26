@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 150" role="img" aria-label="Cargo ship">
+  <!-- hull, bow to the right -->
+  <path d="M30 16 L392 12 C474 12 544 46 544 75 C544 104 474 138 392 138 L30 134
+           C16 134 8 122 8 75 C8 28 16 16 30 16 Z" fill="#1d3242"/>
+  <!-- deck -->
+  <path d="M40 30 L388 26 C450 26 514 52 514 75 C514 98 450 124 388 124 L40 120
+           C30 120 24 110 24 75 C24 40 30 30 40 30 Z" fill="#dde4e2"/>
+  <!-- superstructure + bridge at the stern -->
+  <rect x="32" y="38" width="58" height="74" rx="9" fill="#f5f7f6" stroke="#c3ccc9" stroke-width="2"/>
+  <rect x="42" y="48" width="38" height="13" rx="4" fill="#33403d"/>
+  <rect x="46" y="70" width="30" height="30" rx="7" fill="#bcdc52"/>
+  <!-- container stacks -->
+  <g>
+    <rect x="106" y="36" width="58" height="18" rx="3" fill="#5c8a3a"/>
+    <rect x="106" y="58" width="58" height="18" rx="3" fill="#d9b26a"/>
+    <rect x="106" y="80" width="58" height="18" rx="3" fill="#c96f4a"/>
+    <rect x="106" y="102" width="58" height="18" rx="3" fill="#7fa8b8"/>
+
+    <rect x="170" y="36" width="58" height="18" rx="3" fill="#c96f4a"/>
+    <rect x="170" y="58" width="58" height="18" rx="3" fill="#5c8a3a"/>
+    <rect x="170" y="80" width="58" height="18" rx="3" fill="#bcdc52"/>
+    <rect x="170" y="102" width="58" height="18" rx="3" fill="#d9b26a"/>
+
+    <rect x="234" y="36" width="58" height="18" rx="3" fill="#7fa8b8"/>
+    <rect x="234" y="58" width="58" height="18" rx="3" fill="#c96f4a"/>
+    <rect x="234" y="80" width="58" height="18" rx="3" fill="#5c8a3a"/>
+    <rect x="234" y="102" width="58" height="18" rx="3" fill="#bcdc52"/>
+
+    <rect x="298" y="40" width="56" height="18" rx="3" fill="#d9b26a"/>
+    <rect x="298" y="62" width="56" height="18" rx="3" fill="#bcdc52"/>
+    <rect x="298" y="84" width="56" height="18" rx="3" fill="#7fa8b8"/>
+
+    <rect x="360" y="48" width="48" height="18" rx="3" fill="#5c8a3a"/>
+    <rect x="360" y="70" width="48" height="18" rx="3" fill="#c96f4a"/>
+    <rect x="360" y="92" width="48" height="18" rx="3" fill="#d9b26a"/>
+  </g>
+  <!-- forecastle / bow deck -->
+  <path d="M424 46 C468 50 496 62 502 75 C496 88 468 100 424 104 Z" fill="#c8d2cf"/>
+  <circle cx="470" cy="75" r="5" fill="#8d9a96"/>
+</svg>
