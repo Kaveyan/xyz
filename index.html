@@ -92,13 +92,6 @@ body.loading{overflow:hidden}
   position:absolute; background:var(--land);
   box-shadow:0 0 0 18px var(--shore), 0 0 0 30px rgba(191,221,231,.55);
 }
-/* rocky outcrop sitting in the water beside the shipping route */
-.sea-rocks{
-  position:absolute; z-index:1; width:196px; height:auto;
-  pointer-events:none; user-select:none;
-  filter:drop-shadow(0 8px 14px rgba(12,50,66,.18));
-}
-@media (max-width:860px){ .sea-rocks{width:118px} }
 
 
 /* the ship's course — geometry only, drawn by nothing */
@@ -328,17 +321,6 @@ nav ul a:hover::after,nav ul a:focus-visible::after{transform:scaleX(1);transfor
   letter-spacing:.14em; display:block; margin-bottom:14px; font-weight:600;
 }
 
-/* watercolour palms tucked into the corner of the About section */
-.about-tree{
-  position:absolute; left:0; bottom:0;
-  width:clamp(150px,19vw,300px); height:auto;
-  pointer-events:none; user-select:none; z-index:-1;   /* behind the hero content */
-  opacity:.92;
-}
-@media (max-width:860px){
-  .about-tree{width:clamp(96px,24vw,140px); opacity:.75}
-}
-
 /* destinations shipped to so far */
 .flags{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 0;padding:0;list-style:none}
 .flags li{
@@ -510,7 +492,6 @@ footer{
   </nav>
 
   <header class="hero route-stop" data-lane="none" id="about">
-    <img class="about-tree" src="tree.png" alt="" aria-hidden="true">
     <div class="hero-inner">
       <div class="stat-badge" data-reveal>
         <span class="stat-num">400+ TONS</span>
@@ -808,35 +789,6 @@ const ISLAND_SHAPES = [
   "56% 44% 44% 56% / 46% 56% 44% 54%"
 ];
 
-/* A rocky outcrop out in the water next to the Export Product section, set
-   between the card and the shipping lane so the ship sails past it. */
-function placeSeaRocks(pageTop, W){
-  seaMap.querySelectorAll(".sea-rocks").forEach(el=>el.remove());
-  const products = document.getElementById("products");
-  if(!products) return;
-
-  const narrow = innerWidth < 861;
-  const r      = products.getBoundingClientRect();
-  const width  = narrow ? 118 : 196;
-  const laneX  = W * (narrow ? 0.72 : 0.81);
-  const top    = r.top + scrollY - pageTop;
-
-  const img = document.createElement("img");
-  img.className = "sea-rocks";
-  img.src = "rocks.png";
-  img.alt = "";
-  img.setAttribute("aria-hidden", "true");
-
-  if(narrow){                                   // card is full width — sit below it
-    img.style.left = (W * 0.5 - width / 2) + "px";
-    img.style.top  = (top + r.height + 48) + "px";
-  }else{                                        // open water between card and lane
-    img.style.left = ((r.right + laneX) / 2 - width / 2) + "px";
-    img.style.top  = (top + r.height * 0.42) + "px";
-  }
-  seaMap.appendChild(img);
-}
-
 function buildIslands(pageTop){
   seaMap.querySelectorAll(".island").forEach(el=>el.remove());
   const pad = innerWidth < 861 ? 26 : 54;
@@ -903,7 +855,6 @@ function buildRoute(){
   routeSvg.setAttribute("height", H);
   routeLine.setAttribute("d", d);
   buildIslands(pageTop);
-  placeSeaRocks(pageTop, W);
   routeLen = routeLine.getTotalLength();
 
   /* place the ship straight away — rAF may not run for a while in a background tab */
