@@ -201,6 +201,13 @@ nav ul a:hover::after,nav ul a:focus-visible::after{transform:scaleX(1);transfor
 .menu{display:none}
 
 .hero{
+  /* first section only — the rest of the page keeps the open-sea backdrop.
+     The wash brightens the middle so the headline stays readable over the
+     dark palm silhouettes, while the edges of the photo show through. */
+  background:
+    radial-gradient(115% 88% at 50% 45%,
+      rgba(255,255,255,.80) 0%, rgba(255,255,255,.54) 58%, rgba(255,255,255,.22) 100%),
+    url("hero-bg.jpg") center/cover no-repeat;
   padding:clamp(48px,7vw,90px) clamp(20px,5vw,64px) clamp(56px,8vw,110px);
   display:grid; grid-template-columns:1fr; align-items:center;
   min-height:calc(100svh - 95px); text-align:center; justify-items:center;
