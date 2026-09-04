@@ -106,7 +106,11 @@ body.loading{overflow:hidden}
   width:clamp(112px,14vw,190px);
   z-index:3; pointer-events:none;
   transform-origin:50% 50%; will-change:transform;
-  transition:transform .12s linear;
+  transition:transform .12s linear;            /* position keeps up with scroll */
+}
+.ship-rot{
+  position:relative; transform-origin:50% 50%; will-change:transform;
+  transition:transform .6s cubic-bezier(.4,0,.2,1);   /* heading swings slowly */
 }
 .ship{
   position:relative; display:block; width:100%; height:auto;
@@ -494,8 +498,10 @@ footer{
     <path class="route-line" id="routeLine"/>
   </svg>
   <div class="ship-wrap" id="shipWrap" aria-hidden="true">
-    <span class="wake"></span>
-    <img class="ship" id="ship" src="ship.svg" alt="">
+    <div class="ship-rot" id="shipRot">
+      <span class="wake"></span>
+      <img class="ship" id="ship" src="ship.svg" alt="">
+    </div>
   </div>
   <nav>
     <a class="mark" href="#">
@@ -807,6 +813,10 @@ const progress = document.getElementById("progress");
 const navEl    = document.querySelector("nav");
 const ship     = document.getElementById("ship");
 const shipWrap = document.getElementById("shipWrap");
+const shipRot  = document.getElementById("shipRot");
+let   lastY    = 0;        // to tell which way the page is moving
+let   goingUp  = false;
+let   heading  = null;     // kept unwrapped so the turn animates the short way
 let   wakeTimer = null;
 const routeSvg = document.getElementById("route");
 const seaMap   = document.querySelector(".sea-map");
@@ -931,9 +941,24 @@ function sailShip(){
   const from  = routeLine.getPointAtLength(base);
   const ahead = routeLine.getPointAtLength(base + 2);
   const angle = Math.atan2(ahead.y - from.y, ahead.x - from.x) * 180 / Math.PI;
+
   shipWrap.style.transform =
-    "translate(" + at.x.toFixed(1) + "px," + at.y.toFixed(1) + "px)" +
-    " translate(-50%,-50%) rotate(" + angle.toFixed(1) + "deg)";
+    "translate(" + at.x.toFixed(1) + "px," + at.y.toFixed(1) + "px) translate(-50%,-50%)";
+
+  /* Scrolling up means the ship is travelling back along the course, so it
+     comes about and sails bow-first rather than reversing. The heading is
+     accumulated instead of wrapped, so it always turns the short way round
+     rather than spinning through a full circle at the 180/-180 boundary. */
+  const want = angle + (goingUp ? 180 : 0);
+  if(heading === null){
+    heading = want;
+  }else{
+    let d = (want - heading) % 360;
+    if(d >  180) d -= 360;
+    if(d < -180) d += 360;
+    heading += d;
+  }
+  shipRot.style.transform = "rotate(" + heading.toFixed(1) + "deg)";
 }
 
 function onScroll(){
@@ -944,6 +969,10 @@ function onScroll(){
     const p   = max > 0 ? Math.min(1, scrollY/max) : 0;
     progress.style.transform = "scaleX(" + p + ")";
     navEl.classList.toggle("scrolled", scrollY > 8);
+    if(Math.abs(scrollY - lastY) > 2){        // ignore jitter
+      goingUp = scrollY < lastY;
+      lastY   = scrollY;
+    }
     sailShip();
     if(!reduceMotion){
       shipWrap.classList.add("moving");
