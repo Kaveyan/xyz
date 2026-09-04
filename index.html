@@ -321,6 +321,28 @@ nav ul a:hover::after,nav ul a:focus-visible::after{transform:scaleX(1);transfor
   letter-spacing:.14em; display:block; margin-bottom:14px; font-weight:600;
 }
 
+/* why choose us — sits wider than the alternating cards */
+.why-section{width:min(900px,86%); margin-left:auto; margin-right:auto; background:#f2ead8}
+.why-grid{
+  list-style:none; margin:0; padding:0;
+  display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:16px;
+}
+.why-grid li{
+  display:flex; align-items:flex-start; gap:13px;
+  padding:16px 18px; border-radius:14px;
+  background:rgba(255,255,255,.6); border:1px solid rgba(12,31,27,.10);
+}
+.why-grid li > span{
+  font-family:var(--mono); font-size:12px; font-weight:700;
+  color:#5c8a3a; letter-spacing:.06em; padding-top:2px;
+}
+.why-grid li > p{margin:0; font-size:15px; line-height:1.5; font-weight:600; color:#2c3a32}
+.why-grid > [data-reveal]:nth-child(2){--d:.05s}
+.why-grid > [data-reveal]:nth-child(3){--d:.10s}
+.why-grid > [data-reveal]:nth-child(4){--d:.15s}
+.why-grid > [data-reveal]:nth-child(5){--d:.20s}
+.why-grid > [data-reveal]:nth-child(6){--d:.25s}
+
 /* destinations shipped to so far */
 .flags{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 0;padding:0;list-style:none}
 .flags li{
@@ -533,10 +555,22 @@ footer{
       <span class="num">Who We Are</span>
       <h3>About The Village Coco</h3>
       <p>At The Village Coco, we specialize in exporting premium-quality coconut products worldwide. With a focus on sustainability and quality, we offer Desiccated Coconut Powder, Coco Peat, and Raw Coconuts. Our mission is to bring the finest coconut-based solutions to businesses globally while supporting eco-friendly and ethical farming practices. If you're looking for a reliable coconut supplier, let's connect!</p>
-      <div class="actions">
-        <a class="btn" href="#contact"><span>Start an Inquiry</span> <i class="arrow" aria-hidden="true">&rarr;</i></a>
-      </div>
     </div>
+  </section>
+
+  <section class="why-section route-stop stop-card" data-lane="none" id="why">
+    <div class="section-title" data-reveal>
+      <h3>Why The Village Coco</h3>
+      <p>Six reasons buyers keep coming back to us.</p>
+    </div>
+    <ul class="why-grid">
+      <li data-reveal><span>01</span><p>Farm &amp; Packing Unit at Pollachi</p></li>
+      <li data-reveal><span>02</span><p>Sourcing Directly from Farmers</p></li>
+      <li data-reveal><span>03</span><p>100% Quality Products</p></li>
+      <li data-reveal><span>04</span><p>Easy Shipments &amp; Export Assistance</p></li>
+      <li data-reveal><span>05</span><p>Export &amp; Domestic Packing Facilities</p></li>
+      <li data-reveal><span>06</span><p>3+ Years of Excellence</p></li>
+    </ul>
   </section>
 
   <section class="strip route-stop stop-card stop-right" data-lane="left" id="logistics">
