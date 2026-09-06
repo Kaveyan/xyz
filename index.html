@@ -106,7 +106,7 @@ body.loading{overflow:hidden}
   width:clamp(112px,14vw,190px);
   z-index:3; pointer-events:none;
   transform-origin:50% 50%; will-change:transform;
-  transition:transform .12s linear;            /* position keeps up with scroll */
+  transition:transform .26s ease-out;          /* position keeps up with scroll */
 }
 .ship-rot{
   position:relative; transform-origin:50% 50%; will-change:transform;
@@ -154,7 +154,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
 .route-stop{position:relative;z-index:2}
 .stop-card{
   width:min(600px,70%);
-  margin-block:clamp(200px,16vw,220px);
+  margin-block:clamp(200px,30vw,430px);
   padding:clamp(26px,3.6vw,46px);
   border-radius:28px;
   background:var(--paper);
@@ -326,7 +326,7 @@ nav ul a:hover::after,nav ul a:focus-visible::after{transform:scaleX(1);transfor
 }
 
 /* why choose us — sits wider than the alternating cards */
-.why-section{width:min(820px,62%); background:#f2ead8}
+.why-section{width:min(700px,52%); background:#f2ead8}
 .why-grid{
   list-style:none; margin:0; padding:0;
   display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:16px;
@@ -860,7 +860,7 @@ function buildRoute(){
   pageOffset = pageTop;
   const narrow = W < 861;                              // cards go full-width below this
   const LANES  = narrow ? {left:0.38, center:0.5, right:0.62}   // calmer weave on phones
-                        : {left:0.19, center:0.5, right:0.81};
+                        : {left:0.29, center:0.5, right:0.63};
   const pts = [];
   stops.forEach((el,i)=>{
     const r   = el.getBoundingClientRect();
@@ -887,7 +887,7 @@ function buildRoute(){
   let d = "M " + pts[0][0].toFixed(1) + " " + pts[0][1].toFixed(1);
   for(let i = 1; i < pts.length; i++){
     const [x0,y0] = pts[i-1], [x1,y1] = pts[i];
-    const h = (y1 - y0) * 0.5;
+    const h = (y1 - y0) * 0.34;
     d += " C " + x0.toFixed(1) + " " + (y0+h).toFixed(1) +
          ", " + x1.toFixed(1) + " " + (y1-h).toFixed(1) +
          ", " + x1.toFixed(1) + " " + y1.toFixed(1);
