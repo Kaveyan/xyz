@@ -154,7 +154,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
 .route-stop{position:relative;z-index:2}
 .stop-card{
   width:min(600px,70%);
-  margin-block:clamp(110px,16vw,220px);
+  margin-block:clamp(200px,16vw,220px);
   padding:clamp(26px,3.6vw,46px);
   border-radius:28px;
   background:var(--paper);
@@ -446,7 +446,7 @@ footer{
 @media (max-width:860px){
   .stop-card{width:min(620px,88%);margin-left:auto;margin-right:auto}
   /* full-width islands: the ship sails behind them, visible in the straits */
-  .ship-wrap{z-index:1;width:clamp(88px,22vw,150px)}
+  .ship-wrap{z-index:1;width:clamp(88px,22vw,150px);transition:transform .3s ease-out}
   .inquiry-section{grid-template-columns:1fr}
   .strip{grid-template-columns:1fr}
   nav{flex-wrap:wrap}
@@ -814,9 +814,8 @@ const navEl    = document.querySelector("nav");
 const ship     = document.getElementById("ship");
 const shipWrap = document.getElementById("shipWrap");
 const shipRot  = document.getElementById("shipRot");
-let   lastY    = 0;        // to tell which way the page is moving
-let   goingUp  = false;
-let   heading  = null;     // kept unwrapped so the turn animates the short way
+let   heading  = null;     // kept unwrapped so turns animate the short way
+let   furthest = 0;        // the voyage only ever advances
 let   wakeTimer = null;
 const routeSvg = document.getElementById("route");
 const seaMap   = document.querySelector(".sea-map");
@@ -860,7 +859,7 @@ function buildRoute(){
   const pageTop = page.getBoundingClientRect().top + scrollY;
   pageOffset = pageTop;
   const narrow = W < 861;                              // cards go full-width below this
-  const LANES  = narrow ? {left:0.28, center:0.5, right:0.72}
+  const LANES  = narrow ? {left:0.38, center:0.5, right:0.62}   // calmer weave on phones
                         : {left:0.19, center:0.5, right:0.81};
   const pts = [];
   stops.forEach((el,i)=>{
@@ -900,6 +899,7 @@ function buildRoute(){
   routeLine.setAttribute("d", d);
   buildIslands(pageTop);
   routeLen = routeLine.getTotalLength();
+  furthest = Math.min(furthest, routeLen);
 
   /* place the ship straight away — rAF may not run for a while in a background tab */
   sailShip();
@@ -935,7 +935,10 @@ function sailShip(){
   const t     = maxUp > 0 ? Math.min(1, Math.max(0, (scrollY - (maxUp - vh)) / vh)) : 1;
   const offset = vh / 2 + (need - vh / 2) * t;
 
-  const dist  = distanceAtHeight(scrollY + offset - pageOffset);
+  /* The ship never sails backwards: scrolling up leaves it at the furthest
+     point it has reached rather than retracing the course. */
+  const dist  = Math.max(furthest, distanceAtHeight(scrollY + offset - pageOffset));
+  furthest    = dist;
   const at    = routeLine.getPointAtLength(dist);
   const base  = Math.min(dist, routeLen - 2);          // keep a valid pair at the very end
   const from  = routeLine.getPointAtLength(base);
@@ -949,7 +952,7 @@ function sailShip(){
      comes about and sails bow-first rather than reversing. The heading is
      accumulated instead of wrapped, so it always turns the short way round
      rather than spinning through a full circle at the 180/-180 boundary. */
-  const want = angle + (goingUp ? 180 : 0);
+  const want = angle;
   if(heading === null){
     heading = want;
   }else{
@@ -969,10 +972,6 @@ function onScroll(){
     const p   = max > 0 ? Math.min(1, scrollY/max) : 0;
     progress.style.transform = "scaleX(" + p + ")";
     navEl.classList.toggle("scrolled", scrollY > 8);
-    if(Math.abs(scrollY - lastY) > 2){        // ignore jitter
-      goingUp = scrollY < lastY;
-      lastY   = scrollY;
-    }
     sailShip();
     if(!reduceMotion){
       shipWrap.classList.add("moving");
